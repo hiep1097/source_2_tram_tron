@@ -13,9 +13,13 @@ VanTocVe:50
 -----------------------------------
 ThoiGianTronTaiTram:3
 -----------------------------------
-SoTramTron:1
+SoTramTron:2
 -----------------------------------
 Tram:A
 SoXe:3
 KhoanCachDenCongTruong:10|8|16
+-----------------------------------
+Tram:B
+SoXe:3
+KhoanCachDenCongTruong:6|12|10
 --------------- END ---------------

@@ -16,6 +16,8 @@ public class ParetoChart extends Application {
 
     public static int flagShowDetail = 1; // 0: show only Pareto chart; 1: Show all value (Data + Pareto)
 
+    public static String algorithmName;
+
     public static ObservableList<Data<Number, Number>> lstData = FXCollections.observableArrayList();
     public static ObservableList<Data<Number, Number>> lstParetoData = FXCollections.observableArrayList();
 
@@ -58,14 +60,14 @@ public class ParetoChart extends Application {
             }
         }
 
-        stage.setTitle("Master Thesis about GWO for Construction");
+        stage.setTitle("PhD Thesis about DA_GWO for Construction");
         final NumberAxis xAxis = new NumberAxis(min_x - 3, max_x, (max_x - min_x) / 10);
         final NumberAxis yAxis = new NumberAxis(min_y - 5, max_y, (max_y - min_y) / 10);
         final ScatterChart<Number, Number> sc = new ScatterChart<>(xAxis,
                 yAxis);
         xAxis.setLabel("Construction Wait Truck - CWT (minutes)");
         yAxis.setLabel("Truck Wait Construction - TWC (minutes)");
-        sc.setTitle("Pareto font for GWO algorithm");
+        sc.setTitle("Pareto font for "+ algorithmName+ " algorithm");
 
         Series<Number, Number> series = new Series<>();
         series.setName("Value");

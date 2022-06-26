@@ -14,7 +14,7 @@ public class Main_DA_GWO {
         f_GWO_RMC_CWT ff_cwt = new f_GWO_RMC_CWT();
         f_GWO_RMC_CWT ff_twc = new f_GWO_RMC_TWC();
 
-        int maxiter = 100;
+        int maxiter = 50;
         int N = 30;
 
         DA_GWO qbpso_cwt = new DA_GWO(ff_cwt, ff_cwt.Lower, ff_cwt.Upper, maxiter, N);
@@ -147,9 +147,11 @@ public class Main_DA_GWO {
             System.out.println("--> No. " + (i + 1) + " <--" );
             lst_fSimRMC.get(i).PrintRMC();
             lst_fSimRMC.get(i).PrintPlanOfTruck();
+            lst_fSimRMC.get(i).printSimulatedResult();
         }
 
         ParetoChart chart = new ParetoChart();
+        ParetoChart.algorithmName = "DA_GWO";
         ParetoChart.lstData = lstData;
         ParetoChart.lstParetoData = lstParetoData;
 

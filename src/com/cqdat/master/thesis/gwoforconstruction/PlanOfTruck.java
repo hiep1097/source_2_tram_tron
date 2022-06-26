@@ -3,7 +3,7 @@ package com.cqdat.master.thesis.gwoforconstruction;
 import java.util.ArrayList;
 
 public class PlanOfTruck {
-    public int TruckID;
+    public String TruckID;
     public ArrayList<Plan> lstPlan = new ArrayList<Plan>();
 
     @Override

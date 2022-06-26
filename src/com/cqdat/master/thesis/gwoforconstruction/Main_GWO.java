@@ -149,9 +149,11 @@ public class Main_GWO {
             System.out.println("--> No. " + (i + 1) + " <--" );
             lst_fSimRMC.get(i).PrintRMC();
             lst_fSimRMC.get(i).PrintPlanOfTruck();
+            lst_fSimRMC.get(i).printSimulatedResult();
         }
 
         ParetoChart chart = new ParetoChart();
+        ParetoChart.algorithmName = "GWO";
         ParetoChart.lstData = lstData;
         ParetoChart.lstParetoData = lstParetoData;
 
