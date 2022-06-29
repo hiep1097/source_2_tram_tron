@@ -9,8 +9,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+
+import static com.dagwo.main.Util.checkFixPareto;
+import static com.dagwo.main.Util.writeParetoDataToFile;
 
 public class Main_GWO {
 
@@ -121,24 +124,24 @@ public class Main_GWO {
             }
         } while(checkFixPareto(lstParetoData) == false);
 
-        for(int k = 0; k < 5; k++) {
-            int max = 0;
-            float cwt_max = (float) lstData.get(max).getXValue();
-            float twc_max = (float) lstData.get(max).getYValue();
-
-            for (int i = 0; i < lstData.size(); i++) {
-                float cwt_value_i = (float) lstData.get(i).getXValue();
-                float twc_value_i = (float) lstData.get(i).getYValue();
-
-                if (cwt_value_i > cwt_max && twc_value_i > twc_max) {
-                    max = i;
-                    cwt_max = cwt_value_i;
-                    twc_max = twc_value_i;
-                }
-            }
-
-            lstData.remove(max);
-        }
+//        for(int k = 0; k < 5; k++) {
+//            int max = 0;
+//            float cwt_max = (float) lstData.get(max).getXValue();
+//            float twc_max = (float) lstData.get(max).getYValue();
+//
+//            for (int i = 0; i < lstData.size(); i++) {
+//                float cwt_value_i = (float) lstData.get(i).getXValue();
+//                float twc_value_i = (float) lstData.get(i).getYValue();
+//
+//                if (cwt_value_i > cwt_max && twc_value_i > twc_max) {
+//                    max = i;
+//                    cwt_max = cwt_value_i;
+//                    twc_max = twc_value_i;
+//                }
+//            }
+//
+//            lstData.remove(max);
+//        }
 
         System.out.println("--> Complete Check fix Pareto data");
 
@@ -157,31 +160,14 @@ public class Main_GWO {
             lst_fSimRMC.get(i).printSimulatedResult();
         }
 
+        //ghi so lieu vao file de ve bieu do
+        writeParetoDataToFile("GWO", lstData, lstParetoData);
+
         ParetoChart chart = new ParetoChart();
         ParetoChart.algorithmName = "GWO";
         ParetoChart.lstData = lstData;
         ParetoChart.lstParetoData = lstParetoData;
 
         chart.main(args);
-    }
-
-    public static boolean checkFixPareto(ObservableList<XYChart.Data<Number, Number>> lstParetoData){
-        System.out.println("Check fix Pareto data");
-        for(int i = 0; i < lstParetoData.size() - 1; i++)
-        {
-            float cwt_value_i = (float)lstParetoData.get(i).getXValue();
-            float twc_value_i = (float)lstParetoData.get(i).getYValue();
-
-            for(int j = i + 1; j < lstParetoData.size(); j++)
-            {
-                float cwt_value_j = (float)lstParetoData.get(j).getXValue();
-                float twc_value_j = (float)lstParetoData.get(j).getYValue();
-
-                if ((cwt_value_i < cwt_value_j && twc_value_i < twc_value_j) || (cwt_value_i == cwt_value_j && twc_value_i == twc_value_j) || (cwt_value_i < cwt_value_j && twc_value_i == twc_value_j) || (cwt_value_i == cwt_value_j && twc_value_i < twc_value_j)) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 }

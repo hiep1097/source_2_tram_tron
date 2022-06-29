@@ -12,6 +12,9 @@ import javafx.scene.chart.XYChart;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static com.dagwo.main.Util.checkFixPareto;
+import static com.dagwo.main.Util.writeParetoDataToFile;
+
 public class Main_PSO {
 
     public static void main(String[] args) throws IOException {
@@ -19,7 +22,7 @@ public class Main_PSO {
         f_RMC_CWT ff_cwt = new f_RMC_CWT();
         f_RMC_CWT ff_twc = new f_RMC_TWC();
 
-        int maxiter = 50;
+        int maxiter = 10;
         int N = 30;
 
         PSO cwt = new PSO(ff_cwt, ff_cwt.Lower, ff_cwt.Upper, maxiter, N);
@@ -157,31 +160,14 @@ public class Main_PSO {
             lst_fSimRMC.get(i).printSimulatedResult();
         }
 
+        //ghi so lieu vao file de ve bieu do
+        writeParetoDataToFile("PSO", lstData, lstParetoData);
+
         ParetoChart chart = new ParetoChart();
         ParetoChart.algorithmName = "PSO";
         ParetoChart.lstData = lstData;
         ParetoChart.lstParetoData = lstParetoData;
 
         chart.main(args);
-    }
-
-    public static boolean checkFixPareto(ObservableList<XYChart.Data<Number, Number>> lstParetoData){
-        System.out.println("Check fix Pareto data");
-        for(int i = 0; i < lstParetoData.size() - 1; i++)
-        {
-            float cwt_value_i = (float)lstParetoData.get(i).getXValue();
-            float twc_value_i = (float)lstParetoData.get(i).getYValue();
-
-            for(int j = i + 1; j < lstParetoData.size(); j++)
-            {
-                float cwt_value_j = (float)lstParetoData.get(j).getXValue();
-                float twc_value_j = (float)lstParetoData.get(j).getYValue();
-
-                if ((cwt_value_i < cwt_value_j && twc_value_i < twc_value_j) || (cwt_value_i == cwt_value_j && twc_value_i == twc_value_j) || (cwt_value_i < cwt_value_j && twc_value_i == twc_value_j) || (cwt_value_i == cwt_value_j && twc_value_i < twc_value_j)) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 }

@@ -12,6 +12,9 @@ import javafx.scene.chart.XYChart;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static com.dagwo.main.Util.checkFixPareto;
+import static com.dagwo.main.Util.writeParetoDataToFile;
+
 public class Main_DA {
 
     public static void main(String[] args) throws IOException {
@@ -157,31 +160,14 @@ public class Main_DA {
             lst_fSimRMC.get(i).printSimulatedResult();
         }
 
+        //ghi so lieu vao file de ve bieu do
+        writeParetoDataToFile("DA", lstData, lstParetoData);
+
         ParetoChart chart = new ParetoChart();
         ParetoChart.algorithmName = "DA";
         ParetoChart.lstData = lstData;
         ParetoChart.lstParetoData = lstParetoData;
 
         chart.main(args);
-    }
-
-    public static boolean checkFixPareto(ObservableList<XYChart.Data<Number, Number>> lstParetoData){
-        System.out.println("Check fix Pareto data");
-        for(int i = 0; i < lstParetoData.size() - 1; i++)
-        {
-            float cwt_value_i = (float)lstParetoData.get(i).getXValue();
-            float twc_value_i = (float)lstParetoData.get(i).getYValue();
-
-            for(int j = i + 1; j < lstParetoData.size(); j++)
-            {
-                float cwt_value_j = (float)lstParetoData.get(j).getXValue();
-                float twc_value_j = (float)lstParetoData.get(j).getYValue();
-
-                if ((cwt_value_i < cwt_value_j && twc_value_i < twc_value_j) || (cwt_value_i == cwt_value_j && twc_value_i == twc_value_j) || (cwt_value_i < cwt_value_j && twc_value_i == twc_value_j) || (cwt_value_i == cwt_value_j && twc_value_i < twc_value_j)) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 }

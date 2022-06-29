@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 
 import static java.lang.Double.parseDouble;
 
-public class ParetoChart_ extends Application {
+public class ParetoChart_All extends Application {
 
     public static int flagShowDetail = 1; // 0: show only Pareto chart; 1: Show all value (Data + Pareto)
 
