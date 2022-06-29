@@ -1,4 +1,4 @@
-package com.cqdat.master.thesis.gwoforconstruction;
+package com.dagwo.problem;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +30,7 @@ public class f_SimRMC {
 
     public f_SimRMC(){
         try {
-            ReadFile("Data/input_2_tram.data");
+            ReadFile("Data/input_1_tram_A.data");
         } catch (IOException e) {
             e.printStackTrace();
         }

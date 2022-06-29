@@ -1,5 +1,10 @@
-package com.cqdat.master.thesis.gwoforconstruction;
+package com.dagwo.main;
 
+import com.dagwo.algorithm.DA.DA;
+import com.dagwo.chart.ParetoChart;
+import com.dagwo.problem.f_RMC_CWT;
+import com.dagwo.problem.f_RMC_TWC;
+import com.dagwo.problem.f_SimRMC;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
@@ -7,35 +12,35 @@ import javafx.scene.chart.XYChart;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class Main_DA_GWO {
+public class Main_DA {
 
     public static void main(String[] args) throws IOException {
 
-        f_GWO_RMC_CWT ff_cwt = new f_GWO_RMC_CWT();
-        f_GWO_RMC_CWT ff_twc = new f_GWO_RMC_TWC();
+        f_RMC_CWT ff_cwt = new f_RMC_CWT();
+        f_RMC_CWT ff_twc = new f_RMC_TWC();
 
-        int maxiter = 50;
+        int maxiter = 100;
         int N = 30;
 
-        DA_GWO qbpso_cwt = new DA_GWO(ff_cwt, ff_cwt.Lower, ff_cwt.Upper, maxiter, N);
-        DA_GWO qbpso_twc = new DA_GWO(ff_twc, ff_twc.Lower, ff_twc.Upper, maxiter, N);
+        DA cwt = new DA(ff_cwt, ff_cwt.Lower, ff_cwt.Upper, maxiter, N);
+        DA twc = new DA(ff_twc, ff_twc.Lower, ff_twc.Upper, maxiter, N);
 
         long startTime = System.currentTimeMillis();
 
-        qbpso_cwt.execute();
-        qbpso_twc.execute();
+        cwt.execute();
+        twc.execute();
 
         int lengthOfItem = maxiter * 2;
         int numberOfTruckWanted = ff_cwt.Upper.length;
 
         double[][] data = new double[lengthOfItem][numberOfTruckWanted];
 
-        double[][] temp_cwt = qbpso_cwt.getArrayRandomResult();
+        double[][] temp_cwt = cwt.getArrayRandomResult();
         for (int i = 0; i < maxiter; i++) {
             data[i] = temp_cwt[i];
         }
 
-        double[][] temp_twc = qbpso_twc.getArrayRandomResult();
+        double[][] temp_twc = twc.getArrayRandomResult();
         for (int i = 0; i < maxiter; i++) {
             data[maxiter + i] = temp_twc[i];
         }
@@ -67,16 +72,18 @@ public class Main_DA_GWO {
         f_SimRMC _fSimRMC_CWT = new f_SimRMC();
         f_SimRMC _fSimRMC_TWC = new f_SimRMC();
 
-        _fSimRMC_CWT.Execute(qbpso_cwt.getBestArray());
-        _fSimRMC_TWC.Execute(qbpso_twc.getBestArray());
+        _fSimRMC_CWT.Execute(cwt.getBestArray());
+        _fSimRMC_TWC.Execute(twc.getBestArray());
 
         System.out.println("----->> Best of CWT <<-----");
         System.out.println("CWT = " + _fSimRMC_CWT.CWT + " - TWC = " + _fSimRMC_CWT.TWC);
-        qbpso_cwt.toStringNew("Optimized value CWT = ");
+        cwt.toStringNew("Optimized value CWT = ");
 
         System.out.println("----->> Best of TWC <<-----");
         System.out.println("CWT = " + _fSimRMC_TWC.CWT + " - TWC = " + _fSimRMC_TWC.TWC);
-        qbpso_twc.toStringNew("Optimized value TWC = ");
+        twc.toStringNew("Optimized value TWC = ");
+
+
 
         do {
             for (int i = 0; i < lstParetoData.size() - 1; i++) {
@@ -151,7 +158,7 @@ public class Main_DA_GWO {
         }
 
         ParetoChart chart = new ParetoChart();
-        ParetoChart.algorithmName = "DA_GWO";
+        ParetoChart.algorithmName = "DA";
         ParetoChart.lstData = lstData;
         ParetoChart.lstParetoData = lstParetoData;
 

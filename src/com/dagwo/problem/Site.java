@@ -1,4 +1,4 @@
-package com.cqdat.master.thesis.gwoforconstruction;
+package com.dagwo.problem;
 
 public class Site {
     public int siteID;              //Mã công trường

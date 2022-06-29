@@ -1,4 +1,4 @@
-package com.cqdat.master.thesis.gwoforconstruction;
+package com.dagwo.chart;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;

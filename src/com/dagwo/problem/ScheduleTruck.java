@@ -1,4 +1,4 @@
-package com.cqdat.master.thesis.gwoforconstruction;
+package com.dagwo.problem;
 
 public class ScheduleTruck {
     public String truckID;

@@ -1,4 +1,4 @@
-package com.cqdat.master.thesis.gwoforconstruction;
+package com.dagwo.problem;
 
 //Thông tin chi tiết của lần lần đổ ~ một xe
 public class RMCTruckSchedule {

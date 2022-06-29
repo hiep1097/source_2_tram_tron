@@ -1,4 +1,6 @@
-package com.cqdat.master.thesis.gwoforconstruction;
+package com.dagwo.algorithm.GWO;
+
+import com.dagwo.algorithm.f_xj;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,65 +62,6 @@ public class GWO
         X3 = new double[N][D];
 
         arrRandomBestVal = new double[maxiter][D];
-    }
-
-    double[] getminval_index(double[] a)
-    {
-        double m = 0.0;
-        double b[] = new double[a.length];
-
-        for(int i = 0; i < a.length; i++) {
-            b[i] = a[i];
-        }
-
-        double minval = a[0];
-
-        for(int i = 0; i < a.length; i++) {
-            if(a[i] < minval){
-                minval = a[i];
-            }
-        }
-
-        for(int i = 0; i < a.length; i++) {
-            if(b[i] == minval){
-                m = i;
-                break;
-            }
-        }
-
-        double[] dep = new double[2];
-        dep[0] = minval;
-        dep[1] = m;
-        return dep;
-    }
-
-    double[] getmaxval_index(double a[])
-    {
-        double m = 0.0;
-        double b[] = new double[a.length];
-        for(int i = 0; i < a.length; i++) {
-            b[i] = a[i];
-        }
-
-        double maxval = a[0];
-
-        for(int j = 0; j < a.length; j++) {
-            if(a[j] > maxval) {
-                maxval = a[j];
-            }
-        }
-
-        for(int i = 0; i < b.length; i++) {
-            if(b[i] == maxval) {
-                m = i;
-                break;
-            }
-        }
-
-        double dep2[] = new double[2];
-        dep2[0] = maxval;
-        dep2[1] = m;
-        return dep2;
     }
 
     double[][] sort_and_index(double[][] XXX) throws IOException {
@@ -291,11 +234,11 @@ public class GWO
         return out;
     }
 
-    void execute() throws IOException {
+    public void execute() throws IOException {
         Result = solution();
     }
 
-    void toStringNew(String sMessage) throws IOException {
+    public void toStringNew(String sMessage) throws IOException {
         System.out.println(sMessage + Result[0][0]);
 
         for(int i = 0; i < D;i++) {
@@ -305,12 +248,12 @@ public class GWO
         System.out.println("----------------------------------------");
     }
 
-    double[] getBestArray()
+    public double[] getBestArray()
     {
         return Result[1];
     }
 
-    double[][] getArrayRandomResult(){
+    public double[][] getArrayRandomResult(){
         return arrRandomBestVal;
     }
 }

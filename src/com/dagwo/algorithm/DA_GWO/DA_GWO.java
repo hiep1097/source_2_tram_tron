@@ -1,10 +1,14 @@
-package com.cqdat.master.thesis.gwoforconstruction;
+package com.dagwo.algorithm.DA_GWO;
 
+import com.dagwo.algorithm.f_xj;
 import org.apache.commons.math3.special.Gamma;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 
-public class DA {
+public class DA_GWO {
     double [] lb;
     double [] ub;
     double [] r;
@@ -14,6 +18,8 @@ public class DA {
     double Enemy_fitness;
     double [] Enemy_pos;
     double [][] X;
+    double [][] X_GWO;
+    double [][] X_DA;
     double [] Fitness;
     double [][] DeltaX;
     int dim;
@@ -24,31 +30,58 @@ public class DA {
     double [] Best_pos;
     f_xj fobj;
     int position;
+
+    double r1;
+    double r2;
+    double alfa[];
+    double beta[];
+    double delta[];
+    double A1;
+    double C1;
+    double A2;
+    double C2;
+    double A3;
+    double C3;
+    double a;
+    double X1;
+    double X2;
+    double X3;
     double[][] Result;
     double[][] arrRandomBestVal;
-    public DA(f_xj fobj, double [] lb, double [] ub, int Max_iteration, int SearchAgents_no) {
-        this.fobj = fobj;
-        dim = ub.length;
-        this.SearchAgents_no = SearchAgents_no;
-        this.Max_iteration = Max_iteration;
-        this.ub = ub;
-        this.lb = lb;
-        r = new double[dim];
-        Delta_max = new double[dim];
-        Food_fitness = inf;
-        Food_pos = new double[dim];
-        Enemy_fitness = -inf;
-        Enemy_pos = new double[dim];
-        X = new double[SearchAgents_no][dim];
-        Fitness = new double[SearchAgents_no];
-        DeltaX = new double[SearchAgents_no][dim];
-        Best_score = 0;
-        Best_pos = new double[dim];
+
+    public DA_GWO(f_xj fobj, double [] lb, double [] ub, int Max_iteration, int SearchAgents_no) {
+        //khoi tao chung
+        this.fobj = fobj;   //ham muc tieu
+        dim = ub.length;    //so chieu khong gian (so luong bien)
+        this.SearchAgents_no = SearchAgents_no; //so luong ca the (chuon chuon, soi xam)
+        this.Max_iteration = Max_iteration;     //so vong lap toi da
+        this.ub = ub;                           //bien tren
+        this.lb = lb;                           //bien duoi
+        X = new double[SearchAgents_no][dim];   //vi tri cua ca the
+        X_GWO = new double[SearchAgents_no][dim];   //vi tri cua ca the soi xam
+        X_DA = new double[SearchAgents_no][dim];    //vi tri cua ca the chuon chuon
+        Best_score = inf;                         //gia tri toi uu
+        Best_pos = new double[dim];             //vi tri ca the toi uu
+
+        //khoi tao cho GWO
+        alfa = new double[dim];     //vi tri alpha
+        beta = new double[dim];     //vi tri bete
+        delta = new double[dim];    //vi tri delta
+
+        //khoi tao cho DA
+        r = new double[dim];            //ban kinh anh huong
+        Delta_max = new double[dim];    //buoc nhay delta max
+        Fitness = new double[SearchAgents_no];  //bien luu gia tri ham muc tieu
+        Food_fitness = inf;         //gia tri ham muc tieu tai vi tri con moi, cung la gia tri toi uu hien tai
+        Food_pos = new double[dim]; //vi tri cua con moi
+        Enemy_fitness = -inf;       //gia tri ham muc tieu tai vi tri ke thu
+        Enemy_pos = new double[dim];//vi tri cua ke thu
+        DeltaX = new double[SearchAgents_no][dim];  // buoc nhay delta X
         position = 0;
         arrRandomBestVal = new double[Max_iteration][dim];
     }
 
-    void init(){
+    void init() throws IOException {
         //init Delta_max
         for (int i=0; i<dim; i++) {
             Delta_max[i] = (ub[i]-lb[i])/10;
@@ -67,24 +100,39 @@ public class DA {
                 DeltaX[i][j] = lb[j] + (ub[j] - lb[j]) * nextRand();
             }
         }
+
+        X=sort_and_index(X, SearchAgents_no);
+
+        for(int i = 0; i < dim; i++) {
+            alfa[i] = X[0][i];
+        }
+
+        for(int i = 0; i < dim; i++) {
+            beta[i] = X[1][i];
+        }
+
+        for(int i = 0; i < dim; i++) {
+            delta[i] = X[2][i];
+        }
     }
 
     double[][] solution() throws IOException {
         init();
 
         for (int iter=1; iter<=Max_iteration; iter++){
-            for (int i=0; i<dim; i++) {
-                r[i] = (ub[i]-lb[i])/4+((ub[i]-lb[i])*((double) iter/Max_iteration)*2);
+            //tach quan the thanh GWO va DA
+            int N_GWO = SearchAgents_no/2;
+            int N_DA = SearchAgents_no-SearchAgents_no/2;
+            for (int i=0; i<SearchAgents_no/2; i++){
+                for (int j=0; j<dim; j++){
+                    X_GWO[i][j] = X[i][j];
+                }
             }
-            double w = 0.9- (double) iter*((0.9-0.4)/Max_iteration);
-            double my_c = 0.1- (double) iter*((0.1-0)/((double) Max_iteration/2));
-            if (my_c<0) my_c = 0;
-
-            double s= 2*nextRand()*my_c; // Seperation weight
-            double a= 2*nextRand()*my_c; // Alignment weight
-            double c= 2*nextRand()*my_c; // Cohesion weight
-            double f= 2*nextRand();      // Food attraction weight
-            double e=my_c;               // Enemy distraction weight
+            for (int i=SearchAgents_no/2; i<SearchAgents_no; i++){
+                for (int j=0; j<dim; j++){
+                    X_DA[i-SearchAgents_no/2][j] = X[i][j];
+                }
+            }
 
             for (int i=0; i<SearchAgents_no; i++){  //Calculate all the objective values first
                 Fitness[i] = fobj.func(X[i]);
@@ -105,21 +153,64 @@ public class DA {
                 }
             }
 
-            for (int i=0; i<SearchAgents_no; i++){
+            //GWO
+            a = 2.0 -((double)iter * (2.0 / (double) Max_iteration));
+            for(int i = 0; i < N_GWO; i++) {
+                for(int j = 0; j < dim; j++)
+                {
+                    r1 = nextRand();
+                    r2 = nextRand();
+                    A1 = 2.0 * a * r1 - a;
+                    C1 = 2.0 * r2;
+                    X1 = alfa[j] - A1 * (Math.abs(C1 * alfa[j] - X_GWO[i][j]));
+                    if (X1<lb[j] || X1>ub[j]) X1 = lb[j] + ((ub[j] - lb[j]) * nextRand());
+
+                    r1 = nextRand();
+                    r2 = nextRand();
+                    A2 = 2.0 * a * r1 - a;
+                    C2 = 2.0*r2;
+                    X2 = beta[j] - A2 * (Math.abs(C2 * beta[j] - X_GWO[i][j]));
+                    if (X2<lb[j] || X2>ub[j]) X2 = lb[j] + ((ub[j] - lb[j]) * nextRand());
+
+                    r1 = nextRand();
+                    r2 = nextRand();
+                    A3 = 2.0 * a * r1 - a;
+                    C3 = 2.0 * r2;
+                    X3 = delta[j] - A3 * (Math.abs(C3 * delta[j] - X_GWO[i][j]));
+                    if (X3<lb[j] || X3>ub[j]) X3 = lb[j] + ((ub[j] - lb[j]) * nextRand());
+                    X_GWO[i][j] = (X1 + X2 + X3) / 3.0;
+                }
+            }
+
+            //DA
+            for (int i=0; i<dim; i++) {
+                r[i] = (ub[i]-lb[i])/4+((ub[i]-lb[i])*((double) iter/Max_iteration)*2);
+            }
+            double w = 0.9- (double) iter*((0.9-0.4)/Max_iteration);
+            double my_c = 0.1- (double) iter*((0.1-0)/((double) Max_iteration/2));
+            if (my_c<0) my_c = 0;
+
+            double s= 2*nextRand()*my_c; // Seperation weight
+            double alignment= 2*nextRand()*my_c; // Alignment weight
+            double c= 2*nextRand()*my_c; // Cohesion weight
+            double f= 2*nextRand();      // Food attraction weight
+            double e=my_c;               // Enemy distraction weight
+
+            for (int i=0; i<N_DA; i++){
                 int index=-1;
                 int neighbours_no=0;
-                double [][] Neighbours_DeltaX = new double[SearchAgents_no][dim];
-                double [][] Neighbours_X = new double[SearchAgents_no][dim];
+                double [][] Neighbours_DeltaX = new double[N_DA][dim];
+                double [][] Neighbours_X = new double[N_DA][dim];
                 //find the neighbouring solutions
-                for (int j=0; j<SearchAgents_no; j++){
-                    double [] Dist2Enemy = distance(X[i], X[j]);
+                for (int j=0; j<N_DA; j++){
+                    double [] Dist2Enemy = distance(X_DA[i], X_DA[j]);
                     double zero[] = new double[dim];
                     if (lte(Dist2Enemy, r) && ne(Dist2Enemy,zero)){
                         index = index+1;
                         neighbours_no = neighbours_no + 1;
                         for (int k=0; k<dim; k++){
                             Neighbours_DeltaX[index][k] = DeltaX[j][k];
-                            Neighbours_X[index][k] = X[j][k];
+                            Neighbours_X[index][k] = X_DA[j][k];
                         }
                     }
                 }
@@ -130,7 +221,7 @@ public class DA {
                 if (neighbours_no>1) {
                     for (int k=0; k<neighbours_no; k++){
                         for (int j=0; j<dim; j++) {
-                            S[j] = S[j] + (Neighbours_X[k][j]-X[i][j]);
+                            S[j] = S[j] + (Neighbours_X[k][j]-X_DA[i][j]);
                         }
                     }
                     for (int j=0; j<dim; j++) {
@@ -169,40 +260,40 @@ public class DA {
                     }
                 } else {
                     for (int j=0; j<dim; j++){
-                        C_temp[j] = X[i][j];
+                        C_temp[j] = X_DA[i][j];
                     }
                 }
                 for (int j=0; j<dim; j++){
-                    C[j]=C_temp[j]-X[i][j];
+                    C[j]=C_temp[j]-X_DA[i][j];
                 }
 
                 //Attraction to food%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 //Eq. (3.4)
                 double [] F = new double[dim];
-                double [] Dist2Food = distance(X[i], Food_pos);
+                double [] Dist2Food = distance(X_DA[i], Food_pos);
                 if (lte(Dist2Food,r)){
                     for (int j=0; j<dim; j++){
-                        F[j] = Food_pos[j]-X[i][j];
+                        F[j] = Food_pos[j]-X_DA[i][j];
                     }
                 }
 
                 //Distraction from enemy%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 //Eq. (3.5)
                 double [] Enemy = new double[dim];
-                double [] Dist2Enemy = distance(X[i], Enemy_pos);
+                double [] Dist2Enemy = distance(X_DA[i], Enemy_pos);
                 if (lte(Dist2Enemy,r)){
                     for (int j=0; j<dim; j++){
-                        Enemy[j] = Enemy_pos[j]+X[i][j];
+                        Enemy[j] = Enemy_pos[j]+X_DA[i][j];
                     }
                 }
 
                 for (int j=0; j<dim; j++){
-                    if (X[i][j]>ub[j]){
-                        X[i][j] = lb[j];
+                    if (X_DA[i][j]>ub[j]){
+                        X_DA[i][j] = lb[j];
                         DeltaX[i][j] = nextRand();
                     }
-                    if (X[i][j]<lb[j]){
-                        X[i][j] = ub[j];
+                    if (X_DA[i][j]<lb[j]){
+                        X_DA[i][j] = ub[j];
                         DeltaX[i][j] = nextRand();
                     }
                 }
@@ -217,71 +308,105 @@ public class DA {
                             if (DeltaX[i][j] < -Delta_max[j]){
                                 DeltaX[i][j] = -Delta_max[j];
                             }
-                            X[i][j] = X[i][j] + DeltaX[i][j];
+                            X_DA[i][j] = X_DA[i][j] + DeltaX[i][j];
                         }
                     } else {
                         //Eq. (3.8)
                         double [] levy = Levy(dim);
                         for (int j=0; j<dim; j++){
-                            X[i][j] = X[i][j] +  levy[j]*X[i][j];
+                            X_DA[i][j] = X_DA[i][j] +  levy[j]*X_DA[i][j];
                             DeltaX[i][j] = 0;
                         }
                     }
                 } else {
                     for (int j=0; j<dim; j++){
-                        DeltaX[i][j] = a*A[j] + c*C[j] + s*S[j] + f*F[j] + e*Enemy[j] + w*DeltaX[i][j];
+                        DeltaX[i][j] = alignment*A[j] + c*C[j] + s*S[j] + f*F[j] + e*Enemy[j] + w*DeltaX[i][j];
                         if (DeltaX[i][j] > Delta_max[j]){
                             DeltaX[i][j] = Delta_max[j];
                         }
                         if (DeltaX[i][j] < -Delta_max[j]){
                             DeltaX[i][j] = -Delta_max[j];
                         }
-                        X[i][j] = X[i][j] + DeltaX[i][j];
+                        X_DA[i][j] = X_DA[i][j] + DeltaX[i][j];
                     }
                 }
 
                 for (int j=0; j<dim; j++){
-                    if (X[i][j] > ub[j]){
-                        X[i][j] = ub[j];
+                    if (X_DA[i][j] > ub[j]){
+                        X_DA[i][j] = ub[j];
                     }
-                    if (X[i][j] < lb[j]){
-                        X[i][j] = lb[j];
+                    if (X_DA[i][j] < lb[j]){
+                        X_DA[i][j] = lb[j];
                     }
                 }
 
             }
-            Best_score=Food_fitness;
-            Best_pos=Food_pos;
+
+            //tong hop 2 quan the GWO va DA
+            for (int i=0; i<SearchAgents_no/2; i++){
+                for (int j=0; j<dim; j++){
+                    X[i][j]=X_GWO[i][j];
+                }
+            }
+            for (int i=SearchAgents_no/2; i<SearchAgents_no; i++){
+                for (int j=0; j<dim; j++){
+                    X[i][j]=X_DA[i-SearchAgents_no/2][j];
+                }
+            }
+
+            X = simplebounds(X, SearchAgents_no);
+            X = sort_and_index(X, SearchAgents_no);
+
+            for(int i = 0; i < dim; i++) {
+                alfa[i] = X[0][i];
+            }
+
+            for(int i = 0; i < dim; i++) {
+                beta[i] = X[1][i];
+            }
+
+            for(int i = 0; i < dim; i++) {
+                delta[i] = X[2][i];
+            }
+
+            if (fobj.func(X[0])<Best_score){
+                Best_score=fobj.func(X[0]);
+                for (int i=0; i<dim; i++){
+                    Best_pos[i]=X[0][i];
+                }
+            }
             for (int i=0; i<dim; i++){
                 arrRandomBestVal[iter-1][i] = Best_pos[i];
             }
+
             System.out.println("Iteration: "+iter);
             System.out.println("Best score: "+Best_score);
         }
+
         double[][] out = new double[2][dim];
 
         for(int i = 0; i < dim; i++){
             out[1][i] = Best_pos[i];
         }
 
-        out[0][0] = fobj.func(Best_pos);
+        out[0][0] = Best_score;
         return out;
     }
 
-    void execute() throws IOException {
+    public void execute() throws IOException {
         Result = solution();
     }
 
-    double[][] getArrayRandomResult(){
+    public double[][] getArrayRandomResult(){
         return arrRandomBestVal;
     }
 
-    double[] getBestArray()
+    public double[] getBestArray()
     {
         return Result[1];
     }
 
-    void toStringNew(String sMessage) throws IOException {
+    public void toStringNew(String sMessage) throws IOException {
         System.out.println(sMessage + Result[0][0]);
 
         for(int i = 0; i < dim;i++) {
@@ -289,6 +414,13 @@ public class DA {
         }
 
         System.out.println("----------------------------------------");
+    }
+
+    double nextRand(){
+//        return 0.7;
+//        position++;
+//        return randomm[position-1];
+        return Math.random();
     }
 
     double [] Levy(int d){
@@ -363,10 +495,61 @@ public class DA {
         return d;
     }
 
-    double nextRand(){
-//        return 0.7;
-//        position++;
-//        return randomm[position-1];
-        return Math.random();
+    double[][] sort_and_index(double[][] XXX, int N) throws IOException {
+        double[] yval = new double[N];
+
+        for(int i = 0; i < N; i++) {
+            yval[i] = fobj.func(XXX[i]);
+        }
+
+        ArrayList<Double> nfit = new ArrayList<Double>();
+
+        for(int i = 0; i < N; i++) {
+            nfit.add(yval[i]);
+        }
+
+        ArrayList<Double> nstore = new ArrayList<Double>(nfit);
+        Collections.sort(nfit);
+
+        double[] ret = new double[nfit.size()];
+        Iterator<Double> iterator = nfit.iterator();
+
+        int ii = 0;
+
+        while(iterator.hasNext()) {
+            ret[ii] = iterator.next().doubleValue();
+            ii++;
+        }
+
+        int[] indexes = new int[nfit.size()];
+
+        for(int n = 0; n < nfit.size(); n++) {
+            indexes[n] = nstore.indexOf(nfit.get(n));
+        }
+
+        double[][] B = new double[N][dim];
+
+        for(int i = 0; i < N; i++) {
+            for(int j = 0; j < dim; j++) {
+                B[i][j] = XXX[indexes[i]][j];
+            }
+        }
+
+        return B ;
+    }
+
+    double[][] simplebounds(double s[][], int N) {
+        for(int i = 0; i < N; i++) {
+            for(int j = 0; j < dim; j++) {
+                if(s[i][j] < lb[j]) {
+                    s[i][j] = lb[j] + ((ub[j] - lb[j]) * nextRand());
+                }
+
+                if(s[i][j] > ub[j]) {
+                    s[i][j] = lb[j] + ((ub[j] - lb[j]) * nextRand());
+                }
+            }
+        }
+        return s;
     }
 }

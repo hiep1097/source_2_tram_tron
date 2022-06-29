@@ -1,10 +1,10 @@
-package com.cqdat.master.thesis.gwoforconstruction;
+package com.dagwo.problem;
 
-public class f_GWO_RMC_TWC extends f_GWO_RMC_CWT {
+public class f_RMC_TWC extends f_RMC_CWT {
     public double[] Lower;
     public double[] Upper;
 
-    public f_GWO_RMC_TWC(){
+    public f_RMC_TWC(){
         f_SimRMC ff = new f_SimRMC();
 
         Lower = new double[ff.N];
@@ -20,7 +20,7 @@ public class f_GWO_RMC_TWC extends f_GWO_RMC_CWT {
         System.gc();
     }
 
-    double func(double x[]){
+    public double func(double x[]){
         f_SimRMC ff = new f_SimRMC();
 
         double TWC = ff.Execute_TWC(x);
