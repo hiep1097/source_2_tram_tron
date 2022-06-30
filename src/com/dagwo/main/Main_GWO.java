@@ -22,7 +22,7 @@ public class Main_GWO {
         f_RMC_CWT ff_cwt = new f_RMC_CWT();
         f_RMC_CWT ff_twc = new f_RMC_TWC();
 
-        int maxiter = 10;
+        int maxiter = 100;
         int N = 30;
 
         GWO cwt = new GWO(ff_cwt, ff_cwt.Lower, ff_cwt.Upper, maxiter, N);

@@ -93,35 +93,35 @@ public class ParetoChart_All extends Application {
         }
 
         if (show_DA_GWO == 1){
-            dataSeries_GWO.setName("DA_GWO");
+            dataSeries_DA_GWO.setName("DA_GWO");
             for (Data<Number, Number> data: lstParetoData_DA_GWO){
                 dataSeries_DA_GWO.getData().add(new XYChart.Data<>(data.getXValue(), data.getYValue()));
             }
         }
 
         if (show_DA == 1){
-            dataSeries_GWO.setName("DA");
+            dataSeries_DA.setName("DA");
             for (Data<Number, Number> data: lstParetoData_DA){
                 dataSeries_DA.getData().add(new XYChart.Data<>(data.getXValue(), data.getYValue()));
             }
         }
 
         if (show_PSO == 1){
-            dataSeries_GWO.setName("PSO");
+            dataSeries_PSO.setName("PSO");
             for (Data<Number, Number> data: lstParetoData_PSO){
                 dataSeries_PSO.getData().add(new XYChart.Data<>(data.getXValue(), data.getYValue()));
             }
         }
 
         if (show_ALO == 1){
-            dataSeries_GWO.setName("ALO");
+            dataSeries_ALO.setName("ALO");
             for (Data<Number, Number> data: lstParetoData_ALO){
                 dataSeries_ALO.getData().add(new XYChart.Data<>(data.getXValue(), data.getYValue()));
             }
         }
 
         if (show_GA == 1){
-            dataSeries_GWO.setName("GA");
+            dataSeries_GA.setName("GA");
             for (Data<Number, Number> data: lstParetoData_GA){
                 dataSeries_GA.getData().add(new XYChart.Data<>(data.getXValue(), data.getYValue()));
             }
@@ -136,7 +136,7 @@ public class ParetoChart_All extends Application {
         if (show_ALO == 1) chart.getData().addAll(dataSeries_ALO);
         if (show_GA == 1) chart.getData().addAll(dataSeries_GA);
 
-        chart.setTitle("Pareto font for algorithms");
+        chart.setTitle("Pareto front for algorithms");
         return chart;
     }
 
