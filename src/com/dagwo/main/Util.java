@@ -1,11 +1,14 @@
 package com.dagwo.main;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.Double.parseDouble;
 
 public class Util {
     public static String folderParetoData = "pareto_data";
@@ -51,7 +54,11 @@ public class Util {
         while((line = reader.readLine()) != null){
             data.add(line);
         }
-        return (String[]) data.toArray();
+        String [] arrayData = new String[data.size()];
+        for (int i=0; i<data.size(); i++){
+            arrayData[i] = data.get(i);
+        }
+        return arrayData;
     }
 
     public static boolean checkFixPareto(ObservableList<XYChart.Data<Number, Number>> lstParetoData){
@@ -72,5 +79,21 @@ public class Util {
             }
         }
         return true;
+    }
+
+    public static ObservableList<XYChart.Data<Number, Number>> parseToObservableList(String[] lstString) {
+        ObservableList<XYChart.Data<Number, Number>> lstData = FXCollections.observableArrayList();
+        for(int i = 0; i < lstString.length; i++)
+        {
+            String[] sTemp = lstString[i].split("\\|");
+
+            XYChart.Data<Number, Number> data = new XYChart.Data<>();
+
+            data.setXValue(parseDouble(sTemp[0]));
+            data.setYValue(parseDouble(sTemp[1]));
+
+            lstData.add(data);
+        }
+        return lstData;
     }
 }
