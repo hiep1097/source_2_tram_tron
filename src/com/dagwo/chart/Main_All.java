@@ -9,7 +9,7 @@ public class Main_All {
         ParetoChart_All.show_GWO = 1;
         ParetoChart_All.show_DA = 0;
         ParetoChart_All.show_PSO = 1;
-        ParetoChart_All.show_ALO = 0;
+        ParetoChart_All.show_ALO = 1;
         ParetoChart_All.show_GA = 0;
 
         ParetoChart_All paretoChart_all = new ParetoChart_All();
