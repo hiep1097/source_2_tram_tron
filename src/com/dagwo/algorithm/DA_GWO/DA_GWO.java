@@ -401,6 +401,10 @@ public class DA_GWO {
         return arrRandomBestVal;
     }
 
+    public double[] getWorstArray() {
+        return Enemy_pos;
+    }
+
     public double[] getBestArray()
     {
         return Result[1];

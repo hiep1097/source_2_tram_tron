@@ -20,6 +20,7 @@ public class f_SimRMC {
 
     public float TWC = 0;       // Tổng thời gian Xe đợi Công trường
     public float CWT = 0;       // Tổng thời gian Công trường đợi xe
+    public int TOTAL_DISTANCE = 0;   // Tổng quãng đường tất cả xe phải đi
 
     public double[] x_rand;
 
@@ -30,7 +31,7 @@ public class f_SimRMC {
 
     public f_SimRMC(){
         try {
-            ReadFile("Data/input_1_tram_A.data");
+            ReadFile("Data/input_2_tram.data");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -468,6 +469,10 @@ public class f_SimRMC {
 
             rmcTruckSchedule.TDB = rmcStationBack.lstTDB.get(rmcTruckSchedule.s.siteID-1);
             rmcTruckSchedule.TBB = rmcTruckSchedule.LT + rmcTruckSchedule.TDB;
+
+            //quang duong di = quang duong tu rmcStationGo den cong truong + quang duong tu cong truong ve rmcStationBack
+            rmcTruckSchedule.distanceGo = rmcStationGo.lstD.get(rmcTruckSchedule.s.siteID-1);
+            rmcTruckSchedule.distanceBack = rmcStationBack.lstD.get(rmcTruckSchedule.s.siteID-1);
             lstRMCTruckSchedule.set(i, rmcTruckSchedule);
         }
 
@@ -556,7 +561,7 @@ public class f_SimRMC {
     }
 
     public void PrintRMC(){
-        System.out.println("----------------------------------------------------------------------------------");
+        System.out.println("---------------------------------------------------------------------------------------------------------------------------");
 
         for(RMCTruckSchedule rmc : lstRMCTruckSchedule){
             System.out.println(rmc.toString());
@@ -605,15 +610,19 @@ public class f_SimRMC {
     public void calcSum_TWC_CWT(){
         int sumTWC = 0;
         int sumCWT = 0;
+        int sumDistance = 0;
         for(RMCTruckSchedule rmc : lstRMCTruckSchedule){
             if(rmc.WC > 0)
                 sumTWC += rmc.WC;
             else
                 sumCWT += rmc.WC;
+
+            sumDistance += rmc.distanceGo + rmc.distanceBack;
         }
 
         TWC = sumTWC;
         CWT = Math.abs(sumCWT);
+        TOTAL_DISTANCE = sumDistance;
     }
 
     public double Execute_CWT(double x[]) {

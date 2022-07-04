@@ -18,6 +18,7 @@ public class PSO {
     double[][] Result;
     double[][] arrRandomBestVal;
     Swarm swarm;
+    double [] worstArr;
 
     public PSO(f_xj iff, double[] Lower, double[] Upper, int imaxIter, int iN) {
         maxIter = imaxIter;
@@ -30,6 +31,7 @@ public class PSO {
         dim = ub.length;
         X = new double[N][dim];
         arrRandomBestVal = new double[maxIter][dim];
+        worstArr = new double[dim];
     }
 
     void init() throws IOException {
@@ -62,6 +64,12 @@ public class PSO {
                     currentX[j] = swarm.particles[i].X[j];
                 }
                 swarm.particles[i].O = ff.func(currentX);
+
+                if (swarm.particles[i].O > ff.func(worstArr)){
+                    for (int j = 0; j<dim; j++){
+                        worstArr[j] = swarm.particles[i].X[j];
+                    }
+                }
 
                 //Update the PBEST
                 if (swarm.particles[i].O < swarm.particles[i].PBEST.O){
@@ -149,6 +157,10 @@ public class PSO {
 
     public double[][] getArrayRandomResult(){
         return arrRandomBestVal;
+    }
+
+    public double[] getWorstArray() {
+        return worstArr;
     }
 
     double nextRand(){

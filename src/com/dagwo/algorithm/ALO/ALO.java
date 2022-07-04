@@ -22,6 +22,7 @@ public class ALO {
     double[][] Result;
     double[][] arrRandomBestVal;
     double inf = 10E+50;
+    double [] worstArr;
 
     public ALO(f_xj iff, double[] Lower, double[] Upper, int imaxIter, int iN) {
         maxIter = imaxIter;
@@ -39,6 +40,7 @@ public class ALO {
         Sorted_antlions = new double[N][dim];
         ant_position = new double[N][dim];
         antlion_position = new double[N][dim];
+        worstArr = new double[dim];
     }
 
     void init() throws IOException {
@@ -79,6 +81,9 @@ public class ALO {
 
         for (int i=0; i<dim; i++){
             Elite_antlion_position[i] = Sorted_antlions[0][i];
+        }
+        for (int i=0; i<dim; i++){
+            worstArr[i] = Sorted_antlions[N-1][i];
         }
         Elite_antlion_fitness = sorted_antlion_fitness[0];
         for (int i=0; i<dim; i++){
@@ -203,6 +208,12 @@ public class ALO {
             for (int i=0; i<dim; i++){
                 arrRandomBestVal[iter-1][i] = Elite_antlion_position[i];
             }
+
+            if (ff.func(Sorted_antlions[N-1]) > ff.func(worstArr)){
+                for (int i=0; i<dim; i++){
+                    worstArr[i] = Sorted_antlions[N-1][i];
+                }
+            }
             System.out.println("Iteration: "+(iter));
             System.out.println("Best score: "+Elite_antlion_fitness);
             iter++;
@@ -239,6 +250,10 @@ public class ALO {
 
     public double[][] getArrayRandomResult(){
         return arrRandomBestVal;
+    }
+
+    public double[] getWorstArray() {
+        return worstArr;
     }
 
     double nextRand(){

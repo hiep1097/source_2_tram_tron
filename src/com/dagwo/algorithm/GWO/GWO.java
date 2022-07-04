@@ -36,6 +36,7 @@ public class GWO
 
     double[][] Result;
     double[][] arrRandomBestVal;
+    double [] worstArr;
 
     public GWO(f_xj iff,double iLower[],double iUpper[],int imaxiter,int iN)
     {
@@ -62,6 +63,7 @@ public class GWO
         X3 = new double[N][D];
 
         arrRandomBestVal = new double[maxiter][D];
+        worstArr = new double[D];
     }
 
     double[][] sort_and_index(double[][] XXX) throws IOException {
@@ -126,6 +128,10 @@ public class GWO
 
         for(int i = 0; i < D; i++) {
             delta[i] = XX[2][i];
+        }
+
+        for(int i = 0; i < D; i++) {
+            worstArr[i] = XX[N-1][i];
         }
     }
 
@@ -202,6 +208,12 @@ public class GWO
             XX = simplebounds(XX);
             XX = sort_and_index(XX);
 
+            if (ff.func(XX[N-1]) > ff.func(worstArr)){
+                for (int i=0; i<D; i++){
+                    worstArr[i] = XX[N-1][i];
+                }
+            }
+
             for(int i = 0; i < D; i++) {
                 XX[N-1][i] = XX[0][i];
             }
@@ -255,5 +267,9 @@ public class GWO
 
     public double[][] getArrayRandomResult(){
         return arrRandomBestVal;
+    }
+
+    public double[] getWorstArray() {
+        return worstArr;
     }
 }
