@@ -1,5 +1,6 @@
 package com.dagwo.chart;
 
+import com.dagwo.main.Util;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,9 +11,9 @@ import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.stage.Stage;
 
-import static java.lang.Double.parseDouble;
+import java.io.IOException;
 
-public class ParetoChart extends Application {
+public class ParetoChart_Each_Algorithm extends Application {
 
     public static int flagShowDetail = 1; // 0: show only Pareto chart; 1: Show all value (Data + Pareto)
 
@@ -28,7 +29,8 @@ public class ParetoChart extends Application {
     public int min_y = 100000;
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws IOException {
+        readParetoDataFromFile();
         if(flagShowDetail == 1) {
             for (int i = 0; i < lstData.size(); i++) {
                 if (max_x < (lstData.get(i).getXValue().intValue() + 1))
@@ -91,24 +93,14 @@ public class ParetoChart extends Application {
         stage.show();
     }
 
-
-    public ObservableList<Data<Number, Number>> parseToObservableList(String[] lstString) {
-        ObservableList<Data<Number, Number>> lstData = FXCollections.observableArrayList();
-        for(int i = 0; i < lstString.length; i++)
-        {
-            String[] sTemp = lstString[i].split("|");
-
-            Data<Number, Number> data = new Data<>();
-
-            data.setXValue(parseDouble(sTemp[0]));
-            data.setYValue(parseDouble(sTemp[1]));
-
-            lstData.add(data);
-        }
-        return lstData;
-    }
-
     public void main(String[] args) {
         launch(args);
+    }
+
+    public static void readParetoDataFromFile() throws IOException {
+        String [] data = Util.readParetoDataFromFile("pareto_data/" + algorithmName + "_data.txt");
+        String [] pareto_data = Util.readParetoDataFromFile("pareto_data/" + algorithmName + "_pareto_data.txt");
+        lstData = Util.parseToObservableList(data);
+        lstParetoData = Util.parseToObservableList(pareto_data);
     }
 }
